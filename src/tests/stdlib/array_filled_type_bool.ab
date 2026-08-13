@@ -1,9 +1,0 @@
-import { array_filled } from "std/array"
-
-main {
-    const array = array_filled(0, true)
-    if array == [Bool]:
-        echo("Succeeded")
-    else:
-        echo("Failed")
-}

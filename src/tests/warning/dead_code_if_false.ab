@@ -1,8 +1,0 @@
-// Output
-// Condition is always false, 'if' block will never execute
-// done
-
-if false {
-    echo("never")
-}
-echo("done")

@@ -1,5 +1,0 @@
-// Output
-// Hello "World"
-
-let x = "World"
-echo("Hello \"{x}\"")

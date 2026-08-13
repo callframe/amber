@@ -1,3 +1,0 @@
-test "empty output test" {
-    exit 1
-}

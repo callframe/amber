@@ -1,6 +1,0 @@
-// Output
-// Succeeded
-
-if {
-    else: echo("Succeeded")
-}

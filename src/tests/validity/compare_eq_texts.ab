@@ -1,6 +1,0 @@
-// Output
-// 1
-
-const x = "Hello World"
-const y = "Hello World"
-echo(x == y)

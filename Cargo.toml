@@ -1,70 +1,16 @@
-[package]
-name = "amber"
-version = "0.6.0-alpha"
-edition = "2021"
-repository = "https://github.com/amber-lang/Amber"
-homepage = "https://amber-lang.com/"
-description = "The Programming Language compiled to Bash."
-rust-version = "1.79"
-build = "build.rs"
-
-[package.metadata.deb]
- maintainer = "Amber-Lang project"
- license-file = "LICENSE.md"
- copyright = "2024, Amber-Lang project"
-
-[package.metadata.generate-rpm]
- name = "amber"
- license = "LGPL-3.0-only"
- summary = "The Programming Language compiled to Bash."
- url = "https://amber-lang.com/"
- assets = [
-     { source = "target/release/amber", dest = "/usr/bin/amber", mode = "755" },
- ]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-amber-meta = { path = "meta" }
-chrono = "0.4.38"
-clap = { version = "4.5.20", features = ["derive"] }
-clap_complete = "4.5.36"
-colored = "2.0.0"
-glob = "0.3"
-heraclitus-compiler = "1.9.0"
-include_dir = "0.7.4"
-insta = "1.43.1"
-itertools = "0.13.0"
-inventory = "0.3.22"
-rayon = "1.10.0"
-regex = "1.12.2"
-similar-string = "1.4.2"
-test-generator = "0.3.1"
-wildmatch = "2.4.0"
-walkdir = "2.5.0"
-
-# test dependencies
-[dev-dependencies]
-assert_cmd = "2.0.14"
-predicates = "3.1.0"
-pretty_assertions = "1.4.1"
-tempfile = "3.10.1"
-tiny_http = "0.12.0"
-
-[profile.release]
-strip = true
-lto = true
-opt-level = 3
-
-[profile.dev]
-opt-level = 3
-
-[profile.test]
-opt-level = 3
-
 [workspace]
-members = ["meta"]
+members = ["crates/amber"]
+resolver = "3"
 
-[build-dependencies]
-build-helper = "0.1.1"
-built = { version = "0.7", features = [ "git2" ] }
+[workspace.package]
+description = "The Programming Language compiled to Shell."
+version = "0.7.0"
+edition = "2024"
+repository = "https://github.com/amber-lang/Amber"
+
+[workspace.dependencies]
+# MiMalloc is a general-purpose allocator that generally outperforms libc's malloc.
+# Jemalloc is also worth considering, but doesn't support MSVC targets, so we use MiMalloc instead.
+mimalloc = { version = "0.1.52", features = ["override"] }
+
+clap = { version = "4.6.6" }

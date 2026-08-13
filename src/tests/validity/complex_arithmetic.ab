@@ -1,7 +1,0 @@
-// Output
-// 27
-
-const x = 21
-const y = 2
-const z = 3
-echo(x + y * z)

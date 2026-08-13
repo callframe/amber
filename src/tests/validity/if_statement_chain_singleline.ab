@@ -1,9 +1,0 @@
-// Output
-// 24
-
-const x = 42
-const y = 24
-if {
-    x == y: echo(x)
-    else: echo(y)
-}

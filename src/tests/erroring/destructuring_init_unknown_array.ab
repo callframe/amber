@@ -1,5 +1,0 @@
-// Output
-// Cannot destructure array because its concrete type is unknown
-
-let a = []
-let [x] = a

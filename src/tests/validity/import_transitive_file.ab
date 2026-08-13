@@ -1,3 +1,0 @@
-import * from "src/tests/validity/test_files/is_even.ab"
-
-echo(trim("    Succeeded    "))

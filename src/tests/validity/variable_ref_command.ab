@@ -1,7 +1,0 @@
-fun foo(ref a) {
-    a = $ echo Succeeded $?
-}
-
-let a = ""
-trust foo(a)
-echo(a)

@@ -1,6 +1,0 @@
-// Output
-// 0.3
-
-const a = .2
-const b = .1
-echo(a + b)

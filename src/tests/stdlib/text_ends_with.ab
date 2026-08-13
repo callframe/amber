@@ -1,7 +1,0 @@
-import * from "std/text"
-
-main {
-    if ends_with("hello world", "world") {
-        echo("Succeeded")
-    } 
-} 

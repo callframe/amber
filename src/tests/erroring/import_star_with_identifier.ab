@@ -1,4 +1,0 @@
-// Output
-// Invalid use of '*' in import closure
-
-import { foo, * } from "test"

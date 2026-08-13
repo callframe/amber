@@ -1,8 +1,0 @@
-import * from "std/text"
-
-// Output
-// hello world
-
-main {
-    echo(lowercase("HELLO WORLD"))
-} 

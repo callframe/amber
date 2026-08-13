@@ -1,3 +1,4 @@
 [toolchain]
-channel = "stable"
-components = ["rustfmt", "clippy", "rust-src"]
+# Amber is a binary-first project, so Rust API stability is not a concern.
+channel = "nightly-2026-07-01"
+components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]

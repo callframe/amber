@@ -1,2 +1,0 @@
-version=4
-https://github.com/amber-lang/amber/tags .*/(\d+\.\d+\.\d+)(?:-alpha)?\.tar\.gz

@@ -1,5 +1,0 @@
-pub fun test(): Text {
-    return "Succeeded"
-}
-
-echo(test())

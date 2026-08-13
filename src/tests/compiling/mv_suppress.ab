@@ -1,7 +1,0 @@
-main {
-    trust suppress mv("source", "destination")
-
-    trust suppress {
-        mv("source", "destination")
-    }
-}

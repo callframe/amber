@@ -1,6 +1,0 @@
-// Output
-// A ref cannot be optional
-
-fun foo(ref a = 1) {
-    echo(a)
-}

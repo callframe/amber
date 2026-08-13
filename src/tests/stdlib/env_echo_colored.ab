@@ -1,9 +1,0 @@
-import { echo_colored } from "std/env"
-
-// Output
-// [33mHello Amber![0m
-// [33mHello Amber![0m
-main {
-    echo_colored("Hello Amber!", "orange")
-    echo_colored("Hello Amber!", 33)
-} 

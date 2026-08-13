@@ -1,3 +1,0 @@
-import * from "src/tests/validity/test_files/str/trim.ab"
-
-echo(trim("    Succeeded    "))

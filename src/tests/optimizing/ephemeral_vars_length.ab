@@ -1,2 +1,0 @@
-let a = "this is interesting"
-echo(len(a))

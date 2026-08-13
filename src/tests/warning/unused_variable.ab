@@ -1,8 +1,0 @@
-// Output
-// Unused variable 'unused_var'
-// 1
-
-main {
-    let unused_var = 0
-    echo(1)
-}

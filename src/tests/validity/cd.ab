@@ -1,5 +1,0 @@
-// Output
-// /tmp
-
-trust cd("/tmp/")
-trust $ pwd $

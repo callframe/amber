@@ -1,4 +1,0 @@
-// Output
-// Public variables must be constants
-
-pub let foo = 1

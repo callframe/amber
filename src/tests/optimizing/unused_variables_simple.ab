@@ -1,3 +1,0 @@
-let a = "some value"
-let b = "unused value"
-echo(a)

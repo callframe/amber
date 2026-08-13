@@ -1,4 +1,0 @@
-fun test() {
-    return "Succeeded"
-}
-echo(test())

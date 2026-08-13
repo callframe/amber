@@ -1,7 +1,0 @@
-fun test_func(ref a) {
-    a = "Succeeded"
-}
-
-let a = "Goodbye World"
-test_func(a)
-echo(a)

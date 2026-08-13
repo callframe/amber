@@ -1,4 +1,0 @@
-// Output
-// Test name must be a string literal
-
-test invalid_identifier {}

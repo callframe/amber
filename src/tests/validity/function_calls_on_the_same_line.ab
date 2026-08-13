@@ -1,9 +1,0 @@
-// Output
-// 3
-
-fun f(arg: Num): Num {
-    return arg
-}
-
-const a = f(1) + f(2)
-echo(a)

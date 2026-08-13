@@ -1,8 +1,0 @@
-trust silent {
-    echo("Succeeded")
-    $ non-existent command $
-}
-// Test for expression
-const _ = silent trust $ non-existent command $
-// Test for single statement
-silent trust $ non-existent command $

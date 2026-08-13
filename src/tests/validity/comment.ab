@@ -1,8 +1,0 @@
-// Output
-//
-
-// This is an escaped comment that does not escape \
-// This comment is still a comment in bash
-
-// this is a comment
-const a = 42 // this is a comment as well

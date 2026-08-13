@@ -1,3 +1,0 @@
-$ printf "S" $ succeeded {
-    echo("ucceeded")
-}

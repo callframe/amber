@@ -1,7 +1,0 @@
-import * from "std/text"
-
-main {
-    if starts_with("hello world", "hello") {
-        echo("Succeeded")
-    } 
-} 

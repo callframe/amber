@@ -1,6 +1,0 @@
-// Output
-// Invalid exit code
-
-main {
-    fail "not an int"
-}

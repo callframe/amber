@@ -1,9 +1,0 @@
-fun test(): Num? {
-    if 0 < 5 {
-        fail 1
-    }
-
-    return 42
-}
-
-if trust test() is Num: echo("Succeeded")

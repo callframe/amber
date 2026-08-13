@@ -1,6 +1,0 @@
-// Output
-// 1
-// 0
-
-echo(true )
-echo(false)

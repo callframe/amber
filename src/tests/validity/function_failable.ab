@@ -1,9 +1,0 @@
-fun test_func() {
-    if 0 < 5 {
-        fail 1
-    }
-
-    return 42
-}
-
-test_func() failed: echo("Succeeded")

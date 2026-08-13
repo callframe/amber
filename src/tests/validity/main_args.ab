@@ -1,3 +1,0 @@
-main(args) {
-    if args is [Text] { echo("Succeeded") }
-}

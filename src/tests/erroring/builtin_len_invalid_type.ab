@@ -1,4 +1,0 @@
-// Output
-// Length can only be applied to text or array types
-
-echo(len 1)

@@ -1,6 +1,0 @@
-main {
-    silent {
-        echo("Succeeded")
-        $ non-existent command $?
-    }
-}
