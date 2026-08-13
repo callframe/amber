@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/amber"]
+members = ["crates/amber", "crates/amber-source"]
 resolver = "3"
 
 [workspace.package]
@@ -12,5 +12,10 @@ repository = "https://github.com/amber-lang/Amber"
 # MiMalloc is a general-purpose allocator that generally outperforms libc's malloc.
 # Jemalloc is also worth considering, but doesn't support MSVC targets, so we use MiMalloc instead.
 mimalloc = { version = "0.1.52", features = ["override"] }
+memmap2 = { version = "0.9.11" }
 
 clap = { version = "4.6.6" }
+
+anyhow = { version = "1.0.104" }
+
+amber-source = { path = "crates/amber-source" }

@@ -1,0 +1,11 @@
+[package]
+name = "amber-source"
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+
+[dependencies]
+memmap2 = { workspace = true }
+
+anyhow = { workspace = true }
