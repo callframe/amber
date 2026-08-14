@@ -3,10 +3,37 @@ use amber_source::location::Location;
 #[derive(Debug, Clone, Copy)]
 pub enum TokenType {
     Illegal,
+    Newline,
 
+    // Literals
     Identifier,
     Integer,
     Float,
+
+    // Brackets
+    LeftBrace,
+    RightBrace,
+    LeftParen,
+    RightParen,
+    LeftBracket,
+    RightBracket,
+
+    // Operators
+    Plus,
+    Minus,
+    Star,
+    Slash,
+    Modulo,
+
+    // Assign Operators
+    Assign,
+    PlusAssign,
+    MinusAssign,
+    StarAssign,
+    SlashAssign,
+
+    // Comparison Operators
+    Equal,
 }
 
 #[derive(Debug, Clone)]

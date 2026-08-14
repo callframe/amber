@@ -1,7 +1,6 @@
 use std::{
     cmp::Ordering,
     fs::File,
-    path::Iter,
 };
 
 use anyhow::Result;

@@ -3,18 +3,8 @@ use std::{
     io,
 };
 
-use amber_diagnostic::{
-    Diagnostic,
-    Label,
-    Listener,
-    Severity,
-};
 use amber_parser::scanner::Scanner;
 use amber_source::{
-    location::{
-        Location,
-        Offset,
-    },
     manager::Manager,
     source::Source,
 };
@@ -47,6 +37,6 @@ fn main() {
     let mut listener = ConsoleListener::new(&manager, &mut stdout);
 
     let source = manager.lookup(source_offset).expect("Failed to lookup source");
-    let scanner = Scanner::new(&source, &mut listener);
+    let scanner = Scanner::new(source, &mut listener);
     for _ in scanner {}
 }

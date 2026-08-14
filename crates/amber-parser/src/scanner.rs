@@ -76,20 +76,23 @@ impl<'life> Scanner<'life> {
     }
 
     fn scan_identifier(&mut self) -> TokenType {
-        loop {
-            match self.get_char() {
-                Some(c) => match get_general_category(c) {
-                    GeneralCategory::UppercaseLetter
-                    | GeneralCategory::LowercaseLetter
-                    | GeneralCategory::TitlecaseLetter
-                    | GeneralCategory::ModifierLetter
-                    | GeneralCategory::OtherLetter
-                    | GeneralCategory::DecimalNumber => {
+        while let Some(c) = self.get_char() {
+            match get_general_category(c) {
+                GeneralCategory::UppercaseLetter
+                | GeneralCategory::LowercaseLetter
+                | GeneralCategory::TitlecaseLetter
+                | GeneralCategory::ModifierLetter
+                | GeneralCategory::OtherLetter
+                | GeneralCategory::DecimalNumber => {
+                    self.advance_cursor(c);
+                }
+                _ => {
+                    if c == '_' {
                         self.advance_cursor(c);
+                    } else {
+                        break;
                     }
-                    _ => break,
-                },
-                None => break,
+                }
             }
         }
 
@@ -99,11 +102,7 @@ impl<'life> Scanner<'life> {
     fn scan_number(&mut self) -> TokenType {
         let mut seen_dot = false;
 
-        loop {
-            let Some(c) = self.get_char() else {
-                break;
-            };
-
+        while let Some(c) = self.get_char() {
             match get_general_category(c) {
                 GeneralCategory::DecimalNumber => {
                     self.advance_cursor(c);
@@ -118,6 +117,29 @@ impl<'life> Scanner<'life> {
 
         if seen_dot { TokenType::Float } else { TokenType::Integer }
     }
+
+    fn scan_control(&mut self) -> Option<TokenType> {
+        while let Some(c) = self.get_char() {
+            match c {
+                '\n' => {
+                    self.advance_cursor(c);
+                    return Some(TokenType::Newline);
+                }
+                '\r' => {
+                    self.advance_cursor(c);
+                    if let Some(next_c) = self.get_char() {
+                        if next_c == '\n' {
+                            self.advance_cursor(next_c);
+                        }
+                    }
+                    return Some(TokenType::Newline);
+                }
+                _ => break,
+            }
+        }
+
+        None
+    }
 }
 
 impl<'life> Iterator for Scanner<'life> {
@@ -128,12 +150,9 @@ impl<'life> Iterator for Scanner<'life> {
             return None;
         }
 
-        let c = match self.get_char() {
-            Some(c) => c,
-            None => return None,
-        };
-
+        let c = self.get_char()?;
         let start = self.cursor;
+
         match get_general_category(c) {
             GeneralCategory::UppercaseLetter
             | GeneralCategory::LowercaseLetter
@@ -150,10 +169,116 @@ impl<'life> Iterator for Scanner<'life> {
                 let r#type = self.scan_number();
                 return Some(self.make_token(start, r#type));
             }
+
+            GeneralCategory::Control => {
+                if let Some(r#type) = self.scan_control() {
+                    return Some(self.make_token(start, r#type));
+                }
+            }
+
             _ => {}
         }
 
         match c {
+            '_' => {
+                self.advance_cursor(c);
+                let r#type = self.scan_identifier();
+                return Some(self.make_token(start, r#type));
+            }
+
+            // Brackets
+            '{' => {
+                self.advance_cursor(c);
+                Some(self.make_token(start, TokenType::LeftBrace))
+            }
+
+            '}' => {
+                self.advance_cursor(c);
+                Some(self.make_token(start, TokenType::RightBrace))
+            }
+
+            '(' => {
+                self.advance_cursor(c);
+                Some(self.make_token(start, TokenType::LeftParen))
+            }
+
+            ')' => {
+                self.advance_cursor(c);
+                Some(self.make_token(start, TokenType::RightParen))
+            }
+
+            '[' => {
+                self.advance_cursor(c);
+                Some(self.make_token(start, TokenType::LeftBracket))
+            }
+
+            ']' => {
+                self.advance_cursor(c);
+                Some(self.make_token(start, TokenType::RightBracket))
+            }
+
+            // Operators
+            '+' => {
+                self.advance_cursor(c);
+                match self.get_char() {
+                    Some('=') => {
+                        self.advance_cursor('=');
+                        Some(self.make_token(start, TokenType::PlusAssign))
+                    }
+                    _ => Some(self.make_token(start, TokenType::Plus)),
+                }
+            }
+
+            '-' => {
+                self.advance_cursor(c);
+                match self.get_char() {
+                    Some('=') => {
+                        self.advance_cursor('=');
+                        Some(self.make_token(start, TokenType::MinusAssign))
+                    }
+                    _ => Some(self.make_token(start, TokenType::Minus)),
+                }
+            }
+
+            '*' => {
+                self.advance_cursor(c);
+                match self.get_char() {
+                    Some('=') => {
+                        self.advance_cursor('=');
+                        Some(self.make_token(start, TokenType::StarAssign))
+                    }
+                    _ => Some(self.make_token(start, TokenType::Star)),
+                }
+            }
+
+            '/' => {
+                self.advance_cursor(c);
+                match self.get_char() {
+                    Some('=') => {
+                        self.advance_cursor('=');
+                        Some(self.make_token(start, TokenType::SlashAssign))
+                    }
+                    _ => Some(self.make_token(start, TokenType::Slash)),
+                }
+            }
+
+            '%' => {
+                self.advance_cursor(c);
+                Some(self.make_token(start, TokenType::Modulo))
+            }
+
+            '=' => {
+                self.advance_cursor(c);
+                match self.get_char() {
+                    Some('=') => {
+                        self.advance_cursor('=');
+                        Some(self.make_token(start, TokenType::Equal))
+                    }
+                    _ => Some(self.make_token(start, TokenType::Assign)),
+                }
+            }
+
+            // Else
             _ => {
                 self.advance_cursor(c);
                 Some(self.make_unknown_char(start))
