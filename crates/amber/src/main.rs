@@ -4,13 +4,10 @@ use std::{
 };
 
 use amber_diagnostic::{
+    Diagnostic,
+    Label,
     Listener,
-    diagnostic::{
-        Diagnostic,
-        Label,
-        Severity,
-    },
-    stream_listener::StreamListener,
+    Severity,
 };
 use amber_source::{
     location::{
@@ -22,10 +19,14 @@ use amber_source::{
 };
 use mimalloc::MiMalloc;
 
-use crate::cli::Cli;
+use crate::{
+    cli::Cli,
+    console_listener::ConsoleListener,
+};
 use clap::Parser;
 
 mod cli;
+mod console_listener;
 
 #[global_allocator]
 static ALLOC: MiMalloc = MiMalloc;
@@ -54,7 +55,7 @@ fn main() {
     }
 
     let mut stdout = io::stdout().lock();
-    let mut stdout_listener = StreamListener::new(&manager, &mut stdout);
+    let mut stdout_listener = ConsoleListener::new(&manager, &mut stdout);
     stdout_listener.report(
         Diagnostic::builder()
             .severity(Severity::Error)

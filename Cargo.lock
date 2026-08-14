@@ -10,6 +10,7 @@ dependencies = [
  "amber-source",
  "clap",
  "mimalloc",
+ "tempfile",
 ]
 
 [[package]]
@@ -17,8 +18,6 @@ name = "amber-diagnostic"
 version = "0.7.0"
 dependencies = [
  "amber-source",
- "tempfile",
- "thiserror",
  "typed-builder",
 ]
 

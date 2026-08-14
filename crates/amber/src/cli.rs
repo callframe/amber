@@ -8,8 +8,6 @@ pub struct Cli {
 
 impl Cli {
     pub fn source(&self) -> &str {
-        self.source
-            .to_str()
-            .expect("Source path is not valid UTF-8")
+        self.source.to_str().expect("Source path is not valid UTF-8")
     }
 }

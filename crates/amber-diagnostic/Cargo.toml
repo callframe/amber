@@ -8,9 +8,4 @@ repository.workspace = true
 [dependencies]
 amber-source = { workspace = true }
 
-thiserror = { workspace = true }
-
 typed-builder = { workspace = true }
-
-[dev-dependencies]
-tempfile = { workspace = true }

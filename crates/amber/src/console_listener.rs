@@ -6,27 +6,24 @@ use std::{
     io::Write,
 };
 
+use amber_diagnostic::{
+    Diagnostic,
+    Listener,
+    Severity,
+};
 use amber_source::{
     location::Location,
     manager::Manager,
 };
 
-use crate::{
-    Listener,
-    diagnostic::{
-        Diagnostic,
-        Severity,
-    },
-};
-
-pub struct StreamListener<'life> {
+pub struct ConsoleListener<'life> {
     manager: &'life Manager,
     writer: &'life mut dyn Write,
 }
 
-impl<'life> StreamListener<'life> {
+impl<'life> ConsoleListener<'life> {
     pub fn new(manager: &'life Manager, writer: &'life mut dyn Write) -> Self {
-        StreamListener { manager, writer }
+        ConsoleListener { manager, writer }
     }
 
     fn write_entry(&mut self, severity: Severity, message: &str, location: Location, indent: bool) {
@@ -52,7 +49,7 @@ impl<'life> StreamListener<'life> {
     }
 }
 
-impl<'life> Listener for StreamListener<'life> {
+impl<'life> Listener for ConsoleListener<'life> {
     fn report(&mut self, diagnostic: Diagnostic) {
         self.write_entry(
             diagnostic.get_severity(),
@@ -67,9 +64,9 @@ impl<'life> Listener for StreamListener<'life> {
     }
 }
 
-impl<'life> Debug for StreamListener<'life> {
+impl<'life> Debug for ConsoleListener<'life> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("StreamListener")
+        f.debug_struct("ConsoleListener")
             .field("manager", &self.manager)
             .field("writer", &"<dyn Write>")
             .finish()
@@ -78,6 +75,7 @@ impl<'life> Debug for StreamListener<'life> {
 
 #[cfg(test)]
 mod tests {
+    use amber_diagnostic::Label;
     use amber_source::{
         location::Offset,
         source::Source,
@@ -85,7 +83,6 @@ mod tests {
     use tempfile::NamedTempFile;
 
     use super::*;
-    use crate::diagnostic::Label;
 
     struct TestSource {
         _file: NamedTempFile,
@@ -104,7 +101,7 @@ mod tests {
     fn report_all(manager: &Manager, diagnostics: Vec<Diagnostic>) -> String {
         let mut buffer = Vec::new();
         {
-            let mut listener = StreamListener::new(manager, &mut buffer);
+            let mut listener = ConsoleListener::new(manager, &mut buffer);
             for diagnostic in diagnostics {
                 listener.report(diagnostic);
             }
