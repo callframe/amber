@@ -171,7 +171,7 @@ impl<'life> Iterator for Scanner<'life> {
     type Item = Token<'life>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.source.get_end_offset() <= self.cursor {
+        if self.cursor >= self.source.get_source().len() as u32 {
             return None;
         }
 
