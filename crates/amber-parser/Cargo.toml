@@ -1,18 +1,12 @@
 [package]
-name = "amber"
+name = "amber-parser"
 description.workspace = true
 version.workspace = true
 edition.workspace = true
 repository.workspace = true
 
 [dependencies]
-mimalloc = { workspace = true }
-
-clap = { workspace = true, features = ["derive"] }
+unicode-general-category = { workspace = true }
 
 amber-source = { workspace = true }
 amber-diagnostic = { workspace = true }
-amber-parser = { workspace = true }
-
-[dev-dependencies]
-tempfile = { workspace = true }

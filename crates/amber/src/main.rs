@@ -9,6 +9,7 @@ use amber_diagnostic::{
     Listener,
     Severity,
 };
+use amber_parser::scanner::Scanner;
 use amber_source::{
     location::{
         Location,
@@ -36,38 +37,16 @@ fn main() {
     let file = File::open(cli.source()).expect("Failed to open source file");
 
     let mut manager = Manager::default();
-    {
-        let source = {
-            let source = Source::new(cli.source(), &file).expect("Failed to create source");
-            manager.add_source(source)
-        };
 
-        println!("Source name: {}", source.get_name());
-        println!("Source offset: {:?}", source.get_offset());
-    }
-
-    let found_lines = manager
-        .lookup_lines(Location::new(Offset(8), 15))
-        .unwrap_or_else(|e| panic!("{e}"));
-
-    for line in found_lines.get_lines() {
-        println!("Line {}: {}", line.get_number(), line.get_location());
-    }
+    let source_offset = {
+        let source = Source::new(cli.source(), &file).expect("Failed to create source");
+        manager.add_source(source)
+    };
 
     let mut stdout = io::stdout().lock();
-    let mut stdout_listener = ConsoleListener::new(&manager, &mut stdout);
-    stdout_listener.report(
-        Diagnostic::builder()
-            .severity(Severity::Error)
-            .message("This is a test diagnostic")
-            .location(Location::new(Offset(8), 15))
-            .labels(vec![
-                Label::builder()
-                    .severity(Severity::Info)
-                    .message("This is a test label")
-                    .location(Location::new(Offset(0), 4))
-                    .build(),
-            ])
-            .build(),
-    );
+    let mut listener = ConsoleListener::new(&manager, &mut stdout);
+
+    let source = manager.lookup(source_offset).expect("Failed to lookup source");
+    let scanner = Scanner::new(&source, &mut listener);
+    for _ in scanner {}
 }

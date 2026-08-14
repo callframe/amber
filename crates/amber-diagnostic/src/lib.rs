@@ -7,7 +7,7 @@ use amber_source::location::Location;
 use typed_builder::TypedBuilder;
 
 pub trait Listener {
-    fn report(&mut self, diagnostic: Diagnostic);
+    fn emit(&mut self, diagnostic: Diagnostic);
 }
 
 #[derive(Debug, Clone, Copy)]

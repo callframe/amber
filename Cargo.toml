@@ -1,5 +1,10 @@
 [workspace]
-members = ["crates/amber", "crates/amber-diagnostic", "crates/amber-source"]
+members = [
+    "crates/amber",
+    "crates/amber-diagnostic",
+    "crates/amber-parser",
+    "crates/amber-source",
+]
 resolver = "3"
 
 [workspace.package]
@@ -16,6 +21,8 @@ memmap2 = { version = "0.9.11" }
 
 clap = { version = "4.6.6" }
 
+unicode-general-category = { version = "1.1.0" }
+
 anyhow = { version = "1.0.104" }
 thiserror = { version = "2.0.20" }
 typed-builder = { version = "0.23.2" }
@@ -24,3 +31,4 @@ tempfile = { version = "3.27.0" }
 
 amber-source = { path = "crates/amber-source" }
 amber-diagnostic = { path = "crates/amber-diagnostic" }
+amber-parser = { path = "crates/amber-parser" }

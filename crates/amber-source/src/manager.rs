@@ -70,17 +70,16 @@ impl Manager {
         self.offset + Offset(source.get_source().len() as u32)
     }
 
-    pub fn add_source(&mut self, mut source: Source) -> &Source {
+    pub fn add_source(&mut self, mut source: Source) -> Offset {
         source.patch_offset(self.offset);
         self.offset = self.get_next_offset(&source);
 
-        let source = {
-            self.sources.push(source);
-            self.sources.last().unwrap()
-        };
+        self.sources.push(source);
+        let inserted_source = self.sources.last().unwrap();
+        self.lines
+            .extend_from(inserted_source.get_source(), inserted_source.get_offset());
 
-        self.lines.extend_from(source.get_source(), source.get_offset());
-        source
+        inserted_source.get_offset()
     }
 
     pub fn lookup(&self, offset: Offset) -> Option<&Source> {
@@ -130,8 +129,8 @@ mod tests {
         let second = source_from("second", "de");
 
         let mut manager = Manager::new();
-        assert_eq!(manager.add_source(first.source).get_offset(), Offset(0));
-        assert_eq!(manager.add_source(second.source).get_offset(), Offset(3));
+        assert_eq!(manager.add_source(first.source), Offset(0));
+        assert_eq!(manager.add_source(second.source), Offset(3));
     }
 
     #[test]

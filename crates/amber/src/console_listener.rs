@@ -50,7 +50,7 @@ impl<'life> ConsoleListener<'life> {
 }
 
 impl<'life> Listener for ConsoleListener<'life> {
-    fn report(&mut self, diagnostic: Diagnostic) {
+    fn emit(&mut self, diagnostic: Diagnostic) {
         self.write_entry(
             diagnostic.get_severity(),
             diagnostic.get_message(),
@@ -103,7 +103,7 @@ mod tests {
         {
             let mut listener = ConsoleListener::new(manager, &mut buffer);
             for diagnostic in diagnostics {
-                listener.report(diagnostic);
+                listener.emit(diagnostic);
             }
         }
         String::from_utf8(buffer).unwrap()
