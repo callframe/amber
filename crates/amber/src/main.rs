@@ -4,14 +4,13 @@ use std::{
 };
 
 use amber_diagnostic::{
+    Listener,
     diagnostic::{
         Diagnostic,
+        Label,
         Severity,
     },
-    listener::{
-        Listener,
-        StreamListener,
-    },
+    stream_listener::StreamListener,
 };
 use amber_source::{
     location::{
@@ -47,12 +46,11 @@ fn main() {
     }
 
     let found_lines = manager
-        .lookup_lines(Location::new(Offset(8), Offset(23)))
+        .lookup_lines(Location::new(Offset(8), 15))
         .unwrap_or_else(|e| panic!("{e}"));
 
     for line in found_lines.get_lines() {
-        let line_text = found_lines.get_source().get_line_text(line);
-        println!("Line {}: {}", line.get_number(), line_text);
+        println!("Line {}: {}", line.get_number(), line.get_location());
     }
 
     let mut stdout = io::stdout().lock();
@@ -61,7 +59,14 @@ fn main() {
         Diagnostic::builder()
             .severity(Severity::Error)
             .message("This is a test diagnostic")
-            .location(Location::new(Offset(8), Offset(23)))
+            .location(Location::new(Offset(8), 15))
+            .labels(vec![
+                Label::builder()
+                    .severity(Severity::Info)
+                    .message("This is a test label")
+                    .location(Location::new(Offset(0), 4))
+                    .build(),
+            ])
             .build(),
     );
 }

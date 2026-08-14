@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(clap::Parser)]
+#[derive(Debug, clap::Parser)]
 #[command(author, version, about)]
 pub struct Cli {
     source: PathBuf, // TODO: Allow stdin

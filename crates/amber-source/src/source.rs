@@ -7,11 +7,9 @@ use anyhow::Result;
 use memmap2::Mmap;
 use std::str;
 
-use crate::{
-    line_map::Line,
-    location::Offset,
-};
+use crate::location::Offset;
 
+#[derive(Debug)]
 pub struct Source {
     offset: Option<Offset>,
     name: String,
@@ -31,21 +29,6 @@ impl Source {
             source: text,
         };
 
-        Ok(source)
-    }
-
-    #[cfg(test)]
-    pub fn from_str(name: &str, text: &str) -> Result<Self> {
-        use memmap2::MmapMut;
-
-        let mut buf = MmapMut::map_anon(text.len())?;
-        buf.copy_from_slice(text.as_bytes());
-
-        let source = Source {
-            offset: None,
-            name: name.to_string(),
-            source: buf.make_read_only()?,
-        };
         Ok(source)
     }
 
@@ -70,15 +53,6 @@ impl Source {
             Ok(s) => s,
             Err(_) => unreachable!("Source was checked for UTF-8 validity during construction"),
         }
-    }
-
-    pub fn get_line_text(&self, line: &Line) -> &str {
-        let (start_location, end_location) = (
-            line.get_location().get_start(),
-            line.get_location().get_end(),
-        );
-
-        &self.get_source()[start_location.0 as usize..end_location.0 as usize]
     }
 
     pub(crate) fn patch_offset(&mut self, offset: Offset) {

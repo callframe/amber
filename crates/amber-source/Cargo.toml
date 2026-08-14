@@ -10,3 +10,6 @@ memmap2 = { workspace = true }
 
 anyhow = { workspace = true }
 thiserror = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

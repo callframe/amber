@@ -7,12 +7,17 @@ use std::{
     ops::{
         Add,
         AddAssign,
-        Sub,
     },
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Offset(pub u32);
+
+impl Offset {
+    pub fn saturating_sub(self, other: u32) -> Self {
+        Offset(self.0.saturating_sub(other))
+    }
+}
 
 impl Add for Offset {
     type Output = Self;
@@ -33,14 +38,6 @@ impl Add<u32> for Offset {
 impl AddAssign<u32> for Offset {
     fn add_assign(&mut self, other: u32) {
         self.0 += other;
-    }
-}
-
-impl Sub for Offset {
-    type Output = Self;
-
-    fn sub(self, other: Self) -> Self {
-        Offset(self.0 - other.0)
     }
 }
 
@@ -68,29 +65,43 @@ impl PartialOrd<Offset> for u32 {
     }
 }
 
+impl Display for Offset {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Location {
     start: Offset,
-    end: Offset,
+    len: u32,
 }
 
 impl Location {
-    pub fn new(start: Offset, end: Offset) -> Self {
-        Location { start, end }
+    pub fn new(start: Offset, len: u32) -> Self {
+        Location { start, len }
     }
 
     pub fn get_start(&self) -> Offset {
         self.start
     }
 
+    pub fn get_len(&self) -> u32 {
+        self.len
+    }
+
     pub fn get_end(&self) -> Offset {
-        self.end
+        self.start + self.len
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.len == 0
     }
 }
 
 impl PartialEq<u32> for Location {
     fn eq(&self, other: &u32) -> bool {
-        self.start.0 <= *other && *other < self.end.0
+        self.start.0 <= *other && *other < self.get_end().0
     }
 }
 
@@ -98,7 +109,7 @@ impl PartialOrd<u32> for Location {
     fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
         if self.start.0 > *other {
             Some(Ordering::Greater)
-        } else if self.end.0 <= *other {
+        } else if self.get_end().0 <= *other {
             Some(Ordering::Less)
         } else {
             Some(Ordering::Equal)
@@ -108,6 +119,6 @@ impl PartialOrd<u32> for Location {
 
 impl Display for Location {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}..{}", self.start.0, self.end.0)
+        write!(f, "{}..{}", self.start.0, self.get_end().0)
     }
 }
