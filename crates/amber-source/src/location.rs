@@ -1,5 +1,9 @@
 use std::{
     cmp::Ordering,
+    fmt::{
+        self,
+        Display,
+    },
     ops::{
         Add,
         Sub,
@@ -14,6 +18,14 @@ impl Add for Offset {
 
     fn add(self, other: Self) -> Self {
         Offset(self.0 + other.0)
+    }
+}
+
+impl Add<u32> for Offset {
+    type Output = Self;
+
+    fn add(self, other: u32) -> Self {
+        Offset(self.0 + other)
     }
 }
 
@@ -37,12 +49,6 @@ impl PartialOrd<u32> for Offset {
     }
 }
 
-impl From<u32> for Offset {
-    fn from(value: u32) -> Self {
-        Offset(value)
-    }
-}
-
 impl PartialEq<Offset> for u32 {
     fn eq(&self, other: &Offset) -> bool {
         *self == other.0
@@ -57,19 +63,13 @@ impl PartialOrd<Offset> for u32 {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Location {
-    pub(crate) start: Offset,
-    pub(crate) end: Offset,
+    start: Offset,
+    end: Offset,
 }
 
 impl Location {
-    pub fn new<T>(start: T, end: T) -> Self
-    where
-        T: Into<Offset>,
-    {
-        Location {
-            start: start.into(),
-            end: end.into(),
-        }
+    pub fn new(start: Offset, end: Offset) -> Self {
+        Location { start, end }
     }
 
     pub fn start(&self) -> Offset {
@@ -96,5 +96,11 @@ impl PartialOrd<u32> for Location {
         } else {
             Some(Ordering::Equal)
         }
+    }
+}
+
+impl Display for Location {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}..{}", self.start.0, self.end.0)
     }
 }

@@ -47,15 +47,15 @@ impl Source {
     }
 
     // Should not fail if there is no bug
-    pub fn offset(&self) -> u32 {
+    pub fn offset(&self) -> Offset {
         match self.offset {
-            Some(offset) => offset.0,
+            Some(offset) => offset,
             None => unreachable!("Manager did not patch the source with an offset"),
         }
     }
 
-    pub fn end_offset(&self) -> u32 {
-        self.offset() + self.source().len() as u32
+    pub fn end_offset(&self) -> Offset {
+        self.offset() + self.source.len() as u32
     }
 
     pub(crate) fn patch_offset(&mut self, offset: Offset) {

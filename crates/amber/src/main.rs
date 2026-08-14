@@ -1,7 +1,10 @@
 use std::fs::File;
 
 use amber_source::{
-    location::Location,
+    location::{
+        Location,
+        Offset,
+    },
     manager::Manager,
     source::Source,
 };
@@ -27,13 +30,13 @@ fn main() {
         };
 
         println!("Source name: {}", source.name());
-        println!("Source offset: {}", source.offset());
+        println!("Source offset: {:?}", source.offset());
     }
 
     let lines = manager
         .get_lines()
-        .lookup(Location::new(8, 20))
-        .expect("Failed to get lines");
+        .lookup(Location::new(Offset(8), Offset(23)))
+        .unwrap_or_else(|e| panic!("{e}"));
 
     for line in lines {
         println!(

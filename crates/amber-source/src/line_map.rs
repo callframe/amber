@@ -1,5 +1,7 @@
 use std::cmp::Ordering;
 
+use thiserror::Error;
+
 use crate::{
     location::{
         Location,
@@ -12,13 +14,20 @@ use crate::{
 pub struct Line {
     location: Location,
     line_number: u32,
+    source_offset: Offset,
 }
 
 impl Line {
-    fn new(start_offset: u32, end_offset: u32, line_number: u32) -> Self {
+    fn new(
+        start_offset: Offset,
+        end_offset: Offset,
+        line_number: u32,
+        source_offset: Offset,
+    ) -> Self {
         Line {
             location: Location::new(start_offset, end_offset),
             line_number,
+            source_offset,
         }
     }
 
@@ -55,6 +64,15 @@ impl PartialOrd<Offset> for Line {
     }
 }
 
+#[derive(Debug, Error)]
+pub enum LineMapError {
+    #[error("Location {0} is not within any line")]
+    LinesNotFound(Location),
+
+    #[error("Location {0} crosses file boundaries")]
+    CrossesFileBoundary(Location),
+}
+
 pub struct LineMap {
     lines: Vec<Line>,
 }
@@ -82,8 +100,12 @@ impl LineMap {
             };
 
             let line_end = line_start + line.len() as u32;
-            self.lines
-                .push(Line::new(line_start, line_end, line_number));
+            self.lines.push(Line::new(
+                line_start,
+                line_end,
+                line_number,
+                source.offset(),
+            ));
 
             line_number += 1;
             line_start = line_end;
@@ -91,16 +113,26 @@ impl LineMap {
         }
     }
 
-    fn get_line(&self, location: Offset) -> Option<usize> {
+    fn get_line(&self, location: Offset) -> Option<(usize, Offset)> {
         self.lines
             .binary_search_by(|l| l.partial_cmp(&location).unwrap())
             .ok()
+            .map(|i| (i, self.lines[i].source_offset))
     }
 
-    pub fn lookup(&self, location: Location) -> Option<&[Line]> {
-        let start_index = self.get_line(location.start())?;
-        let end_index = self.get_line(location.end())?;
+    pub fn lookup(&self, location: Location) -> Result<&[Line], LineMapError> {
+        let (start_index, start_source_offset) = self
+            .get_line(location.start())
+            .ok_or(LineMapError::LinesNotFound(location))?;
 
-        Some(&self.lines[start_index..=end_index])
+        let (end_index, end_source_offset) = self
+            .get_line(location.end())
+            .ok_or(LineMapError::LinesNotFound(location))?;
+
+        if start_source_offset != end_source_offset {
+            return Err(LineMapError::CrossesFileBoundary(location));
+        }
+
+        Ok(&self.lines[start_index..=end_index])
     }
 }
