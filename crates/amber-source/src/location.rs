@@ -6,6 +6,7 @@ use std::{
     },
     ops::{
         Add,
+        AddAssign,
         Sub,
     },
 };
@@ -26,6 +27,12 @@ impl Add<u32> for Offset {
 
     fn add(self, other: u32) -> Self {
         Offset(self.0 + other)
+    }
+}
+
+impl AddAssign<u32> for Offset {
+    fn add_assign(&mut self, other: u32) {
+        self.0 += other;
     }
 }
 
@@ -72,11 +79,11 @@ impl Location {
         Location { start, end }
     }
 
-    pub fn start(&self) -> Offset {
+    pub fn get_start(&self) -> Offset {
         self.start
     }
 
-    pub fn end(&self) -> Offset {
+    pub fn get_end(&self) -> Offset {
         self.end
     }
 }

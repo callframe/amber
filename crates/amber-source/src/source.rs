@@ -7,7 +7,10 @@ use anyhow::Result;
 use memmap2::Mmap;
 use std::str;
 
-use crate::location::Offset;
+use crate::{
+    line_map::Line,
+    location::Offset,
+};
 
 pub struct Source {
     offset: Option<Offset>,
@@ -47,44 +50,53 @@ impl Source {
     }
 
     // Should not fail if there is no bug
-    pub fn offset(&self) -> Offset {
+    pub fn get_offset(&self) -> Offset {
         match self.offset {
             Some(offset) => offset,
             None => unreachable!("Manager did not patch the source with an offset"),
         }
     }
 
-    pub fn end_offset(&self) -> Offset {
-        self.offset() + self.source.len() as u32
+    pub fn get_end_offset(&self) -> Offset {
+        self.get_offset() + self.source.len() as u32
     }
 
-    pub(crate) fn patch_offset(&mut self, offset: Offset) {
-        self.offset = Some(offset);
-    }
-
-    pub fn name(&self) -> &str {
+    pub fn get_name(&self) -> &str {
         &self.name
     }
 
-    pub fn source(&self) -> &str {
+    pub fn get_source(&self) -> &str {
         match str::from_utf8(&self.source) {
             Ok(s) => s,
             Err(_) => unreachable!("Source was checked for UTF-8 validity during construction"),
         }
     }
+
+    pub fn get_line_text(&self, line: &Line) -> &str {
+        let (start_location, end_location) = (
+            line.get_location().get_start(),
+            line.get_location().get_end(),
+        );
+
+        &self.get_source()[start_location.0 as usize..end_location.0 as usize]
+    }
+
+    pub(crate) fn patch_offset(&mut self, offset: Offset) {
+        self.offset = Some(offset);
+    }
 }
 
 impl PartialEq<Offset> for Source {
     fn eq(&self, other: &Offset) -> bool {
-        self.offset() <= other.0 && other.0 < self.end_offset()
+        self.get_offset() <= other.0 && other.0 < self.get_end_offset()
     }
 }
 
 impl PartialOrd<Offset> for Source {
     fn partial_cmp(&self, other: &Offset) -> Option<Ordering> {
-        if self.offset() > other.0 {
+        if self.get_offset() > other.0 {
             Some(Ordering::Greater)
-        } else if self.end_offset() <= other.0 {
+        } else if self.get_end_offset() <= other.0 {
             Some(Ordering::Less)
         } else {
             Some(Ordering::Equal)

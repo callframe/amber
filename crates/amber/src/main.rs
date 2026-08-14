@@ -29,21 +29,16 @@ fn main() {
             manager.add_source(source)
         };
 
-        println!("Source name: {}", source.name());
-        println!("Source offset: {:?}", source.offset());
+        println!("Source name: {}", source.get_name());
+        println!("Source offset: {:?}", source.get_offset());
     }
 
-    let lines = manager
-        .get_lines()
-        .lookup(Location::new(Offset(8), Offset(23)))
+    let found_lines = manager
+        .lookup_lines(Location::new(Offset(8), Offset(23)))
         .unwrap_or_else(|e| panic!("{e}"));
 
-    for line in lines {
-        println!(
-            "Line {}: start: {:?}, end: {:?}",
-            line.get_line_number(),
-            line.get_location().start(),
-            line.get_location().end()
-        );
+    for line in found_lines.get_lines() {
+        let line_text = found_lines.get_source().get_line_text(line);
+        println!("Line {}: {}", line.get_number(), line_text);
     }
 }
