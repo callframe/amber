@@ -10,6 +10,12 @@ pub struct Manager {
     lines: LineMap,
 }
 
+impl Default for Manager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Manager {
     pub fn new() -> Self {
         Manager {

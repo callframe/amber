@@ -18,7 +18,7 @@ fn main() {
     let cli = Cli::parse();
     let file = File::open(cli.source()).expect("Failed to open source file");
 
-    let mut manager = Manager::new();
+    let mut manager = Manager::default();
     let source = {
         let source = Source::new(cli.source(), &file).expect("Failed to create source");
         manager.add_source(source)
@@ -26,6 +26,4 @@ fn main() {
 
     println!("Source name: {}", source.name());
     println!("Source offset: {}", source.offset());
-
-    
 }

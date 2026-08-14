@@ -51,6 +51,12 @@ pub struct LineMap {
     lines: Vec<Line>,
 }
 
+impl Default for LineMap {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LineMap {
     pub fn new() -> Self {
         LineMap { lines: Vec::new() }
@@ -80,7 +86,6 @@ impl LineMap {
         self.lines
             .binary_search_by(|l| l.partial_cmp(&location).unwrap())
             .ok()
-            .map(|i| i)
     }
 
     pub fn get_lines(&self, location: Location) -> Option<&[Line]> {
