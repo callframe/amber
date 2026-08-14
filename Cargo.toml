@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/amber", "crates/amber-source"]
+members = ["crates/amber", "crates/amber-diagnostic", "crates/amber-source"]
 resolver = "3"
 
 [workspace.package]
@@ -18,5 +18,7 @@ clap = { version = "4.6.6" }
 
 anyhow = { version = "1.0.104" }
 thiserror = { version = "2.0.20" }
+typed-builder = { version = "0.23.2" }
 
 amber-source = { path = "crates/amber-source" }
+amber-diagnostic = { path = "crates/amber-diagnostic" }

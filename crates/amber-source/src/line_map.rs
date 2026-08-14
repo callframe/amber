@@ -33,7 +33,7 @@ impl Line {
 
     pub fn get_column(&self, location: Location) -> u32 {
         assert!(self.location.get_start() <= location.get_start());
-        assert!(self.location.get_end() >= location.get_end());
+        assert!(self.location.get_end() >= location.get_start());
         location.get_start().0 - self.location.get_start().0
     }
 

@@ -1,5 +1,18 @@
-use std::fs::File;
+use std::{
+    fs::File,
+    io,
+};
 
+use amber_diagnostic::{
+    diagnostic::{
+        Diagnostic,
+        Severity,
+    },
+    listener::{
+        Listener,
+        StreamListener,
+    },
+};
 use amber_source::{
     location::{
         Location,
@@ -41,4 +54,14 @@ fn main() {
         let line_text = found_lines.get_source().get_line_text(line);
         println!("Line {}: {}", line.get_number(), line_text);
     }
+
+    let mut stdout = io::stdout().lock();
+    let mut stdout_listener = StreamListener::new(&manager, &mut stdout);
+    stdout_listener.report(
+        Diagnostic::builder()
+            .severity(Severity::Error)
+            .message("This is a test diagnostic")
+            .location(Location::new(Offset(8), Offset(23)))
+            .build(),
+    );
 }

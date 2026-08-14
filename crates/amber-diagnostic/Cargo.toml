@@ -1,14 +1,11 @@
 [package]
-name = "amber"
+name = "amber-diagnostic"
 description.workspace = true
 version.workspace = true
 edition.workspace = true
 repository.workspace = true
 
 [dependencies]
-mimalloc = { workspace = true }
-
-clap = { workspace = true, features = ["derive"] }
-
 amber-source = { workspace = true }
-amber-diagnostic = { workspace = true }
+
+typed-builder = { workspace = true }
