@@ -35,11 +35,12 @@ impl<'life> Scanner<'life> {
         }
     }
 
-    fn get_char(&self) -> Option<char> {
-        match self.source.get_source().get(self.cursor as usize..) {
-            Some(c) => c.chars().next(),
-            None => None,
-        }
+    fn get_char(&self, offset: u32) -> Option<char> {
+        let cursor = self.cursor + offset;
+        self.source
+            .get_source()
+            .get(cursor as usize..)
+            .and_then(|s| s.chars().next())
     }
 
     fn advance_cursor(&mut self, c: char) {
@@ -76,7 +77,7 @@ impl<'life> Scanner<'life> {
     }
 
     fn scan_identifier(&mut self) -> TokenType {
-        while let Some(c) = self.get_char() {
+        while let Some(c) = self.get_char(0) {
             match get_general_category(c) {
                 GeneralCategory::UppercaseLetter
                 | GeneralCategory::LowercaseLetter
@@ -102,7 +103,7 @@ impl<'life> Scanner<'life> {
     fn scan_number(&mut self) -> TokenType {
         let mut seen_dot = false;
 
-        while let Some(c) = self.get_char() {
+        while let Some(c) = self.get_char(0) {
             match get_general_category(c) {
                 GeneralCategory::DecimalNumber => {
                     self.advance_cursor(c);
@@ -118,22 +119,46 @@ impl<'life> Scanner<'life> {
         if seen_dot { TokenType::Float } else { TokenType::Integer }
     }
 
-    fn scan_control(&mut self) -> Option<TokenType> {
-        while let Some(c) = self.get_char() {
+    fn scan_comment(&mut self) {
+        while let Some(c) = self.get_char(0) {
             match c {
+                '\n' | '\r' => break,
+                _ => self.advance_cursor(c),
+            }
+        }
+    }
+
+    fn scan_trivia(&mut self) -> Option<TokenType> {
+        while let Some(c) = self.get_char(0) {
+            match c {
+                // TODO: consider whether we support docstrings
+                '/' => {
+                    if let Some('/') = self.get_char(1) {
+                        self.advance_cursor(c);
+                        self.advance_cursor('/');
+                        self.scan_comment();
+                    } else {
+                        break;
+                    }
+                }
+
+                '\r' => {
+                    self.advance_cursor(c);
+                    if let Some('\n') = self.get_char(0) {
+                        self.advance_cursor('\n');
+                    }
+                    return Some(TokenType::Newline);
+                }
+
                 '\n' => {
                     self.advance_cursor(c);
                     return Some(TokenType::Newline);
                 }
-                '\r' => {
+
+                ' ' | '\t' => {
                     self.advance_cursor(c);
-                    if let Some(next_c) = self.get_char() {
-                        if next_c == '\n' {
-                            self.advance_cursor(next_c);
-                        }
-                    }
-                    return Some(TokenType::Newline);
                 }
+
                 _ => break,
             }
         }
@@ -150,9 +175,12 @@ impl<'life> Iterator for Scanner<'life> {
             return None;
         }
 
-        let c = self.get_char()?;
         let start = self.cursor;
+        if let Some(r#type) = self.scan_trivia() {
+            return Some(self.make_token(start, r#type));
+        }
 
+        let c = self.get_char(0).unwrap();
         match get_general_category(c) {
             GeneralCategory::UppercaseLetter
             | GeneralCategory::LowercaseLetter
@@ -170,12 +198,6 @@ impl<'life> Iterator for Scanner<'life> {
                 return Some(self.make_token(start, r#type));
             }
 
-            GeneralCategory::Control => {
-                if let Some(r#type) = self.scan_control() {
-                    return Some(self.make_token(start, r#type));
-                }
-            }
-
             _ => {}
         }
 
@@ -183,7 +205,7 @@ impl<'life> Iterator for Scanner<'life> {
             '_' => {
                 self.advance_cursor(c);
                 let r#type = self.scan_identifier();
-                return Some(self.make_token(start, r#type));
+                Some(self.make_token(start, r#type))
             }
 
             // Brackets
@@ -220,7 +242,7 @@ impl<'life> Iterator for Scanner<'life> {
             // Operators
             '+' => {
                 self.advance_cursor(c);
-                match self.get_char() {
+                match self.get_char(0) {
                     Some('=') => {
                         self.advance_cursor('=');
                         Some(self.make_token(start, TokenType::PlusAssign))
@@ -231,7 +253,7 @@ impl<'life> Iterator for Scanner<'life> {
 
             '-' => {
                 self.advance_cursor(c);
-                match self.get_char() {
+                match self.get_char(0) {
                     Some('=') => {
                         self.advance_cursor('=');
                         Some(self.make_token(start, TokenType::MinusAssign))
@@ -242,7 +264,7 @@ impl<'life> Iterator for Scanner<'life> {
 
             '*' => {
                 self.advance_cursor(c);
-                match self.get_char() {
+                match self.get_char(0) {
                     Some('=') => {
                         self.advance_cursor('=');
                         Some(self.make_token(start, TokenType::StarAssign))
@@ -253,7 +275,7 @@ impl<'life> Iterator for Scanner<'life> {
 
             '/' => {
                 self.advance_cursor(c);
-                match self.get_char() {
+                match self.get_char(0) {
                     Some('=') => {
                         self.advance_cursor('=');
                         Some(self.make_token(start, TokenType::SlashAssign))
@@ -269,7 +291,7 @@ impl<'life> Iterator for Scanner<'life> {
 
             '=' => {
                 self.advance_cursor(c);
-                match self.get_char() {
+                match self.get_char(0) {
                     Some('=') => {
                         self.advance_cursor('=');
                         Some(self.make_token(start, TokenType::Equal))
