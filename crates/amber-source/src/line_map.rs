@@ -11,14 +11,14 @@ use crate::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Line {
     location: Location,
-    line_no: u32,
+    line_number: u32,
 }
 
 impl Line {
-    fn new(start_offset: u32, end_offset: u32, line_no: u32) -> Self {
+    fn new(start_offset: u32, end_offset: u32, line_number: u32) -> Self {
         Line {
             location: Location::new(start_offset, end_offset),
-            line_no,
+            line_number,
         }
     }
 
@@ -26,6 +26,14 @@ impl Line {
         assert!(self.location.start() <= location.start());
         assert!(self.location.end() >= location.end());
         location.start().0 - self.location.start().0
+    }
+
+    pub fn get_line_number(&self) -> u32 {
+        self.line_number
+    }
+
+    pub fn get_location(&self) -> Location {
+        self.location
     }
 }
 
@@ -65,7 +73,7 @@ impl LineMap {
     pub(crate) fn extend_from(&mut self, source: &Source) {
         let mut cursor = source.source();
         let mut line_start = source.offset();
-        let mut line_no = 1;
+        let mut line_number = 1;
 
         while !cursor.is_empty() {
             let line = match cursor.find('\n') {
@@ -74,9 +82,10 @@ impl LineMap {
             };
 
             let line_end = line_start + line.len() as u32;
-            self.lines.push(Line::new(line_start, line_end, line_no));
+            self.lines
+                .push(Line::new(line_start, line_end, line_number));
 
-            line_no += 1;
+            line_number += 1;
             line_start = line_end;
             cursor = &cursor[line.len()..];
         }
@@ -88,7 +97,7 @@ impl LineMap {
             .ok()
     }
 
-    pub fn get_lines(&self, location: Location) -> Option<&[Line]> {
+    pub fn lookup(&self, location: Location) -> Option<&[Line]> {
         let start_index = self.get_line(location.start())?;
         let end_index = self.get_line(location.end())?;
 
